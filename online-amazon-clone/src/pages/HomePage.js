@@ -1,21 +1,48 @@
-// HomePage.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Slider from 'react-slick';
 import ProductCard from '../components/ProductCard';
-import image1 from '../assets/images/image1.jpg';
-import image2 from '../assets/images/image2.jpg';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const HomePage = () => {
-  const featuredProducts = [
-    { id: 1, name: 'Product 1', price: 100, image: image1, category: 'Electronics' },
-    { id: 2, name: 'Product 2', price: 200, image: image2, category: 'Clothing' },
-  ];
-
+  const [featuredProducts, setFeaturedProducts] = useState([]);
   const categories = [
     { id: 1, name: 'Electronics' },
     { id: 2, name: 'Books' },
     { id: 3, name: 'Clothing' },
   ];
+
+  useEffect(() => {
+    // Fetch featured products from the backend
+    fetch('http://localhost:5000/api/products/featured')
+      .then((response) => response.json())
+      .then((data) => setFeaturedProducts(data))
+      .catch((error) => console.error('Error fetching featured products:', error));
+  }, []);
+
+  // Slider settings
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3, // Number of products to display at a time
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 768, // For tablets and smaller screens
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 480, // For mobile devices
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
 
   return (
     <div>
@@ -38,11 +65,15 @@ const HomePage = () => {
       {/* Featured Products Section */}
       <section className="featured-products">
         <h2>Featured Products</h2>
-        <div className="product-grid">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {featuredProducts.length > 0 ? (
+          <Slider {...sliderSettings}>
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </Slider>
+        ) : (
+          <p>Loading featured products...</p>
+        )}
       </section>
     </div>
   );

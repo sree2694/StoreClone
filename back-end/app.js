@@ -1,12 +1,20 @@
-const express = require('express')
-const app = express()
-const port = 5000
+const express = require('express');
+const cors = require('cors'); // Import cors
+const app = express();
+const port = 5000;
 
-// Example data for products
+// Enable CORS for all origins
+app.use(cors());
+
+// Serve static files from the "public/images" folder
+app.use('/images', express.static('public/images'));
+
+// Example products data
 const products = [
-  { id: 1, name: 'Product 1', price: 100, category: 'Electronics', image: '/images/image1.jpg' },
-  { id: 2, name: 'Product 2', price: 200, category: 'Clothing', image: '/images/image2.jpg' },
-  { id: 3, name: 'Product 3', price: 150, category: 'Books', image: '/images/image3.jpg' },
+  { id: 1, name: 'Laptop', price: 100, category: 'Electronics', image: '/images/image1.jpg' },
+  { id: 2, name: 'Smart phone', price: 200, category: 'Electronics', image: '/images/image2.jpg' },
+  { id: 3, name: 'T-Shirt', price: 150, category: 'Clothing', image: '/images/image3.jpg' },
+  { id: 4, name: 'C Programming Absolute Beginner`s Guide', price: 100, category: 'Books', image: '/images/books.jpg' },
 ];
 
 // Fetch products by category
@@ -16,7 +24,12 @@ app.get('/api/products/category/:category', (req, res) => {
   res.json(filteredProducts);
 });
 
+app.get('/api/products/featured', (req, res) => {
+  // Return first two as featured products (can be modified)
+  const featuredProducts = products.slice(0, 4);
+  res.json(featuredProducts);
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
-

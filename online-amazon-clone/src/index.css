@@ -40,7 +40,19 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
-  margin-top: 20px;
+  margin-top: 20px 0;
+}
+
+.product-grid img {
+  max-width: 100%;
+  height: auto;
+}
+
+h2 {
+  margin-top: 40px;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
 }
 
 .product-card {

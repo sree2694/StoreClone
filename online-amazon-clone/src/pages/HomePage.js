@@ -1,12 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import ProductCard from '../components/ProductCard';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { debounce } from 'lodash';
+import {
+  Box,
+  Container,
+  Grid,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+  Typography
+} from '@mui/material';
 
 const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [results, setResults] = useState([]);
   const [filters, setFilters] = useState({
     search: '',
     category: '',
@@ -24,15 +37,15 @@ const HomePage = () => {
   ];
 
   useEffect(() => {
+    // Fetch products whenever filters change (including category)
     const query = new URLSearchParams(filters).toString();
-
-    fetch(`http://localhost:5000/api/products?${query}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setFeaturedProducts(data.products);
-        setTotalPages(data.totalPages);
-      })
-      .catch((error) => console.error('Error fetching products:', error));
+    fetch(`http://localhost:5000/api/products?${query}&page=${filters.currentPage}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setFeaturedProducts(data.products);
+          setTotalPages(data.totalPages);
+        })
+        .catch((error) => console.error('Error fetching products:', error));
   }, [filters]);
 
   const sliderSettings = {
@@ -49,76 +62,131 @@ const HomePage = () => {
     ]
   };
 
+  const fetchSearchResults = async (query) => {
+    try {
+      const response = await fetch(`/api/search?query=${query}`);
+      const data = await response.json();
+      setResults(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const debouncedSearch = useCallback(debounce(fetchSearchResults, 500), []);
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchTerm(query);
+    debouncedSearch(query);
+  };
+
+  // Handle category change and reset the page to 1
+  const handleCategoryChange = (categoryName) => {
+    setFilters((prev) => ({
+      ...prev,
+      category: categoryName,
+      currentPage: 1 // Reset to first page when category changes
+    }));
+  };
+
   return (
-    <div>
-      <h1>Welcome to Amazon Clone</h1>
+      <Container>
+        <Typography variant="h3" gutterBottom align="center">
+          Welcome to Amazon Clone
+        </Typography>
 
-      <section className="categories">
-        <h2>Shop by Categories</h2>
-        <div className="category-list">
-          {categories.map((category) => (
-            <div key={category.id} className="category-card">
-              <Link
-                to={`/products/category/${category.name}`}
-                onClick={() => setFilters((prev) => ({ ...prev, category: category.name }))}
-              >
-                <h3>{category.name}</h3>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+        {/* Search Bar */}
+        <Box display="flex" justifyContent="center" mb={3}>
+          <TextField
+              variant="outlined"
+              fullWidth
+              value={searchTerm}
+              onChange={handleSearch}
+              placeholder="Search..."
+              sx={{ maxWidth: 600 }}
+          />
+        </Box>
 
-      <section className="search-filter">
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={filters.search}
-          onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-        />
-        <select onChange={(e) => setFilters((prev) => ({ ...prev, sort: e.target.value }))}>
-          <option value="">Sort by</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-        </select>
-        <select onChange={(e) => setFilters((prev) => ({ ...prev, priceRange: e.target.value }))}>
-          <option value="">Price Range</option>
-          <option value="0-50">$0 - $50</option>
-          <option value="51-100">$51 - $100</option>
-          <option value="101-200">$101 - $200</option>
-          <option value="200-1000">$200+</option>
-        </select>
-      </section>
-
-      <section className="featured-products">
-        <h2>Featured Products</h2>
-        {featuredProducts.length > 0 ? (
-          <Slider {...sliderSettings}>
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+        {/* Search Results */}
+        <Box>
+          <Grid container spacing={2}>
+            {results.map((result) => (
+                <Grid item key={result.id} xs={12} sm={6} md={4}>
+                  <Typography>{result.name}</Typography>
+                </Grid>
             ))}
-          </Slider>
-        ) : (
-          <p>Loading featured products...</p>
-        )}
-      </section>
+          </Grid>
+        </Box>
 
-      <div className="pagination">
-        <button
-          disabled={filters.currentPage === 1}
-          onClick={() => setFilters((prev) => ({ ...prev, currentPage: Math.max(prev.currentPage - 1, 1) }))}
-        >
-          Previous
-        </button>
-        <span>{filters.currentPage} of {totalPages}</span>
-        <button
-          disabled={filters.currentPage === totalPages}
-          onClick={() => setFilters((prev) => ({ ...prev, currentPage: Math.min(prev.currentPage + 1, totalPages) }))}
-        >
-          Next
-        </button>
-      </div>
-    </div>
+        {/* Categories Section */}
+        <section className="categories">
+          <Typography variant="h4" gutterBottom>
+            Shop by Categories
+          </Typography>
+          <Grid container spacing={2}>
+            {categories.map((category) => (
+                <Grid item key={category.id} xs={12} sm={6} md={4}>
+                  <Box
+                      component={Link}
+                      to={`/products/category/${category.name}`}
+                      onClick={() => handleCategoryChange(category.name)} // Handle category click
+                      sx={{
+                        display: 'block',
+                        p: 2,
+                        backgroundColor: '#f9f9f9',
+                        borderRadius: 1,
+                        textAlign: 'center',
+                        '&:hover': {
+                          backgroundColor: '#e0e0e0'
+                        }
+                      }}
+                  >
+                    <Typography variant="h6">{category.name}</Typography>
+                  </Box>
+                </Grid>
+            ))}
+          </Grid>
+        </section>
+
+        {/* Featured Products Section */}
+        <section className="featured-products">
+          <Typography variant="h4" gutterBottom>
+            Featured Products
+          </Typography>
+          {featuredProducts.length > 0 ? (
+              <Slider {...sliderSettings}>
+                {featuredProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                ))}
+              </Slider>
+          ) : (
+              <Typography>Loading featured products...</Typography>
+          )}
+        </section>
+
+        {/* Pagination Section */}
+        <Box display="flex" justifyContent="center" my={4}>
+          <Button
+              variant="contained"
+              disabled={filters.currentPage === 1}
+              onClick={() => setFilters((prev) => ({ ...prev, currentPage: Math.max(prev.currentPage - 1, 1) }))}
+              sx={{ mr: 2 }}
+          >
+            Previous
+          </Button>
+          <Typography variant="body1">
+            {filters.currentPage} of {totalPages}
+          </Typography>
+          <Button
+              variant="contained"
+              disabled={filters.currentPage === totalPages}
+              onClick={() => setFilters((prev) => ({ ...prev, currentPage: Math.min(prev.currentPage + 1, totalPages) }))}
+              sx={{ ml: 2 }}
+          >
+            Next
+          </Button>
+        </Box>
+      </Container>
   );
 };
 

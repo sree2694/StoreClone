@@ -8,8 +8,10 @@ import ProductListingPage from './pages/ProductListingPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import ErrorBoundary from "./services/ErrorBoundary";
 
 const App = () => (
+    <ErrorBoundary>
   <Router>
     <Navbar />
     <main>
@@ -24,6 +26,7 @@ const App = () => (
     </main>
     <Footer />
   </Router>
+    </ErrorBoundary>
 );
 
 export default App;

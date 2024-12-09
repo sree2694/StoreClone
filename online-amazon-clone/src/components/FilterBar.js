@@ -6,20 +6,22 @@ const FilterBar = ({ setFilters }) => {
   };
 
   return (
-    <div className="filter-bar">
-      <select name="category" onChange={handleFilterChange}>
-        <option value="">All Categories</option>
-        <option value="electronics">Electronics</option>
-        <option value="clothing">Clothing</option>
-        <option value="books">Books</option>
-      </select>
-      <select name="price" onChange={handleFilterChange}>
-        <option value="">No Price Limit</option>
-        <option value="50">Under $50</option>
-        <option value="100">Under $100</option>
-        <option value="500">Under $500</option>
-      </select>
-    </div>
+      <div className="filter-bar">
+          <select name="category" onChange={handleFilterChange}>
+              <option value="">All Categories</option>
+              <option value="electronics">Electronics</option>
+              <option value="clothing">Clothing</option>
+              <option value="books">Books</option>
+          </select>
+          <select onChange={(e) => setFilters((prev) => ({...prev, priceRange: e.target.value}))}>
+              <option value="">Price Range</option>
+              <option value="0-50">$0 - $50</option>
+              <option value="51-100">$51 - $100</option>
+              <option value="101-200">$101 - $200</option>
+              <option value="200-1000">$200+</option>
+          </select>
+
+      </div>
   );
 };
 

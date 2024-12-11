@@ -9,6 +9,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ErrorBoundary from "./services/ErrorBoundary";
+import AboutUsPage from './pages/About';
 
 const App = () => (
     <ErrorBoundary>
@@ -22,6 +23,7 @@ const App = () => (
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/about" element={<AboutUsPage/>} />
       </Routes>
     </main>
     <Footer />

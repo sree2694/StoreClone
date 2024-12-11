@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Container, IconButton, Grid, Link } from '@mui/material';
+import { Box, Typography, Container, IconButton, Grid, Link, TextField, Button } from '@mui/material';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -35,7 +35,7 @@ const Footer = () => (
             </Box>
 
             {/* Quick Links Section */}
-            <Grid container spacing={4} justifyContent="center">
+            <Grid container spacing={4} justifyContent="center" sx={{ mb: 4 }}>
                 <Grid item xs={6} sm={4} md={2}>
                     <Typography variant="h6">Shop</Typography>
                     <Box>
@@ -57,7 +57,35 @@ const Footer = () => (
                         <Link href="/support" color="inherit" sx={{ display: 'block' }}>Support</Link>
                     </Box>
                 </Grid>
+                <Grid item xs={6} sm={4} md={2}>
+                    <Typography variant="h6">Legal</Typography>
+                    <Box>
+                        <Link href="/privacy-policy" color="inherit" sx={{ display: 'block' }}>Privacy Policy</Link>
+                        <Link href="/terms" color="inherit" sx={{ display: 'block' }}>Terms of Service</Link>
+                    </Box>
+                </Grid>
             </Grid>
+
+            {/* Contact Information */}
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="body1" sx={{ mb: 1 }}>Contact Us</Typography>
+                <Typography variant="body2">123 E-commerce St., Shopping City, SC 45678</Typography>
+                <Typography variant="body2">Phone: (123) 456-7890</Typography>
+                <Typography variant="body2">Email: support@amazonclone.com</Typography>
+            </Box>
+
+            {/* Email Sign-Up Form */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                <TextField
+                    variant="outlined"
+                    placeholder="Enter your email"
+                    size="small"
+                    sx={{ backgroundColor: '#fff', borderRadius: 1 }}
+                />
+                <Button variant="contained" color="primary">
+                    Sign Up
+                </Button>
+            </Box>
         </Container>
     </Box>
 );

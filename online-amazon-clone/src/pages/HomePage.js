@@ -10,8 +10,6 @@ import {
   Container,
   Grid,
   TextField,
-  Select,
-  MenuItem,
   Button,
   Typography
 } from '@mui/material';
@@ -91,9 +89,9 @@ const HomePage = () => {
 
   return (
       <Container>
-        <Typography variant="h3" gutterBottom align="center">
+        {/* <Typography variant="h3" gutterBottom align="center">
           Welcome to Amazon Clone
-        </Typography>
+        </Typography> */}
 
         {/* Search Bar */}
         <Box display="flex" justifyContent="center" mb={3}>
